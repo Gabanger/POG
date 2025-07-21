@@ -1,11 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://ckm81ps7jhmcr"]
+[gd_scene load_steps=6 format=3 uid="uid://ckm81ps7jhmcr"]
 
 [ext_resource type="PackedScene" uid="uid://ducgqc0etk828" path="res://scenes/player.tscn" id="1_2q6dc"]
+[ext_resource type="Texture2D" uid="uid://d0k04yywfvujp" path="res://textures/floor_test.png" id="1_w7c3h"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rd3vj"]
 size = Vector3(20, 0.1, 20)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w8frs"]
+albedo_texture = ExtResource("1_w7c3h")
+uv1_scale = Vector3(27, 20, 20)
+texture_filter = 0
+
 [sub_resource type="BoxMesh" id="BoxMesh_2q6dc"]
+material = SubResource("StandardMaterial3D_w8frs")
 size = Vector3(20, 0.1, 20)
 
 [node name="Level" type="Node3D"]
