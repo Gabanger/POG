@@ -3,7 +3,10 @@ extends CharacterBody3D
 
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
-const DECELERATION_MID_AIR = 0.1
+const DECELERATION_MID_AIR = 1
+const DECELERATION_FLOOR = 15
+const ACCELERATION_MID_AIR = 0.25
+const ACCELERATION_FLOOR = 3
 
 @onready var Camera = $"Camera3D"
 
@@ -27,12 +30,16 @@ func _physics_process(delta: float) -> void:
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	direction = direction.rotated(Vector3(0,1,0),Camera.rotation.y)
 	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+		if is_on_floor():
+			velocity.x = move_toward(velocity.x, direction.x * SPEED, ACCELERATION_MID_AIR)
+			velocity.z = move_toward(velocity.z, direction.z * SPEED, ACCELERATION_MID_AIR)
+		else:
+			velocity.x = move_toward(velocity.x, direction.x * SPEED, ACCELERATION_MID_AIR)
+			velocity.z = move_toward(velocity.z, direction.z * SPEED, ACCELERATION_MID_AIR)
 	else:
 		if is_on_floor():
-			velocity.x = move_toward(velocity.x, 0, SPEED)
-			velocity.z = move_toward(velocity.z, 0, SPEED)
+			velocity.x -= velocity.x * DECELERATION_FLOOR * delta
+			velocity.z -= velocity.z * DECELERATION_FLOOR * delta
 		else:
 			velocity.x -= velocity.x * DECELERATION_MID_AIR * delta
 			velocity.z -= velocity.z * DECELERATION_MID_AIR * delta
