@@ -32,6 +32,9 @@ mesh = SubResource("CapsuleMesh_g2els")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 script = ExtResource("2_g2els")
 
+[node name="RayCast_Camera" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+
 [node name="AreaPogo" type="Area3D" parent="."]
 collision_layer = 4
 
