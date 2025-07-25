@@ -12,35 +12,47 @@ const ACCELERATION_MID_AIR = 0.5
 
 var saved_direction: Vector3 = Vector3.ZERO
 
+var simulated_jump = false
+
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
-
+		
 	var input_direction = get_input_direction()
+	var pogo_on_floor = is_pogo_on_floor > 0
+	var jump_pressed = Input.is_action_just_pressed("ui_accept") or simulated_jump
+
+	if pogo_on_floor and jump_pressed:
+		velocity.y = JUMP_VELOCITY
+		saved_direction = input_direction
+		if not simulated_jump:
+			simulated_jump = true
+			simulate_space_release()
 
 	if is_on_floor():
-
-		if Input.is_action_just_pressed("ui_accept"):
-			velocity.y = JUMP_VELOCITY
-			saved_direction = input_direction
-
-		elif input_direction == Vector3.ZERO:
+		if input_direction == Vector3.ZERO:
 			velocity.x = move_toward(velocity.x, 0, HOP_FORCE * 0.3)
 			velocity.z = move_toward(velocity.z, 0, HOP_FORCE * 0.3)
-
-		elif not Input.is_action_pressed("ui_accept") and input_direction != Vector3.ZERO:
+		elif not jump_pressed and input_direction != Vector3.ZERO:
 			saved_direction = input_direction
 			var impulse = input_direction.normalized() * HOP_FORCE
 			velocity.x = impulse.x
 			velocity.z = impulse.z
 			velocity.y = HOP_HEIGHT
 	else:
-		# Contrôle en l'air
 		var blended = saved_direction.lerp(input_direction, AIR_CONTROL_BLEND).normalized()
 		velocity.x = move_toward(velocity.x, blended.x * HOP_FORCE, ACCELERATION_MID_AIR)
 		velocity.z = move_toward(velocity.z, blended.z * HOP_FORCE, ACCELERATION_MID_AIR)
 
 	move_and_slide()
+
+
+func simulate_space_release() -> void:
+	await get_tree().create_timer(0.5).timeout
+	simulated_jump = false
+
+
+
 
 func get_input_direction() -> Vector3:
 	var input_vec = Input.get_vector("left", "right", "forward", "backward")
